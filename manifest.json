@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "FbCommands",
+  "version": "0.1",
+
+  "permissions": [
+    "debugger"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.facebook.com/*"
+      ],
+      "js": [
+        "char_to_keycode.js",
+        "commands/ChatCommand.js",
+        "main.js",
+        "commands/HideCommand.js",
+        "commands/SpamCommand.js",
+        "commands/AsciiCommand.js"
+      ]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  }
+}
