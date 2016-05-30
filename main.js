@@ -91,13 +91,14 @@ class ChatManager {
         var conversationContainerHeight = this.conversationContainerTable.getBoundingClientRect().height;
 
         var interval = setInterval(function() {
-            if (conversationContainerHeight - (scope.nubBody.scrollTop + nubBodyHeight) > localMessageHeight + 1) {
+            if (conversationContainerHeight - (scope.nubBody.scrollTop + nubBodyHeight) > localMessageHeight - 10) {
                 // Done scrolling.
                 clearInterval(interval);
+                scope.localMessageArea.innerHTML = '';
             } else {
                 scope.nubBody.scrollTop--;
             }
-        }, 5);
+        }, 3);
     }
 
     sendTrustedKeyPress(keyCode, shiftKey, text) {
