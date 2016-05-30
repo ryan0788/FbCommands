@@ -154,6 +154,7 @@ class ChatManager {
     }
 
     onRecievedMessage(message) {
+        //this.sendLocalMessage(message);
     }
 
     onCommand(message) {
