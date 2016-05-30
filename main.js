@@ -6,7 +6,9 @@ window.addEventListener("load", function() {
     addManagerToChatNubs(nubGroup);
 
     var observer = new MutationObserver(function(mutations) {
-      addManagerToChatNubs(nubGroup);   
+        setTimeout(function() { // Wait for it to be built
+            addManagerToChatNubs(nubGroup);
+        }, 250);
     });
      
     observer.observe(nubGroup, { childList: true });
@@ -39,6 +41,8 @@ class ChatManager {
         this.nub = nub;
         this.nubBody = nub.getElementsByClassName("fbNubFlyoutBody")[0];
         this.nubFooter = nub.getElementsByClassName('fbNubFlyoutFooter')[0]
+        this.lastMessage = undefined;
+        this.hasFocus = false;
 
         this.inputField = this.nubFooter.querySelectorAll('[data-reactroot]')[0];
         this.conversationContainerTable = this.nubBody.getElementsByClassName('conversationContainer')[0];
@@ -65,7 +69,7 @@ class ChatManager {
 
                 if (input_text[0] == '/') { // A command was called
                     scope.clearInputField();
-                    scope.onReceivedCommand(input_text.slice(1));
+                    scope.onCommand(input_text.slice(1));
                 } else {
                     scope.onSentMessage(input_text);
                 }
@@ -73,6 +77,30 @@ class ChatManager {
                 return false;
             }
         };
+
+        this.inputField.addEventListener("focus", function() {
+            scope.hasFocus = true;
+        }, true);
+
+        this.inputField.addEventListener("blur", function() {
+            scope.hasFocus = false;
+        }, true);
+
+        // Add listener for new messages
+        this.conversationRoot = this.conversationContainerTable.getElementsByClassName('conversation')[0].querySelectorAll('[data-reactroot]')[0];
+        var observer = new MutationObserver(function(mutations) {
+            var messages = scope.conversationRoot.getElementsByClassName('_5yl5'); // Message class name
+            var lastMessage = messages[messages.length - 1];
+
+            // Okay this is very much a hack, but it works okay?
+            var bgColor = document.defaultView.getComputedStyle(lastMessage.parentNode.parentNode.parentNode, null).getPropertyValue("background-color");
+            if (bgColor == "rgb(254, 254, 254)") {
+                var message = lastMessage.childNodes[0].innerHTML;
+                scope.onRecievedMessage(message);
+            }
+        });
+         
+        observer.observe(this.conversationRoot, { childList: true, subtree: true });
 
         // Show the loaded message, hide it after 3 seconds.
         this.sendLocalMessage("Facebook Commands active.", 3000);
@@ -125,7 +153,10 @@ class ChatManager {
         this.sendMessage(message);
     }
 
-    onReceivedCommand(message) {
+    onRecievedMessage(message) {
+    }
+
+    onCommand(message) {
         var args = message.split(' ');
         var command = args[0].toUpperCase();
         if (commands.hasOwnProperty(command)) {
@@ -152,18 +183,21 @@ class ChatManager {
     }
 
     sendMessage(message) {
+        var sentMessage = message;
         if (this.getInputText() != message) {
             this.clearInputField();
-
+            sentMessage = '';
             // Type the message into the input field.
             for (var i = 0, len = message.length; i < len; i++) {
                 var char = message[i];
                 if (CHAR_TO_KEYCODE.hasOwnProperty(char)) {
+                    sentMessage += char;
                     this.sendTrustedKeyPress(CHAR_TO_KEYCODE[char].keyCode, CHAR_TO_KEYCODE[char].shiftKey, char);
                 }
             }
         }
 
+        this.lastMessage = sentMessage;
         this.sendTrustedKeyPress(13); // Shoot!
     }
 
