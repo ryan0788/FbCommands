@@ -19,4 +19,4 @@ class HideCommand extends ChatCommand {
 	}
 }
 
-registerCommand(HideCommand);
+FbCommands.registerCommand(HideCommand);

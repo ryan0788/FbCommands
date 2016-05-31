@@ -53,4 +53,4 @@ class AsciiCommand extends ChatCommand {
 	}
 }
 
-registerCommand(AsciiCommand);
+FbCommands.registerCommand(AsciiCommand);

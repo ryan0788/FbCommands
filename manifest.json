@@ -15,7 +15,9 @@
         "char_to_keycode.js",
         "commands/ChatCommand.js",
         "ChatObserver.js",
+        "ChatManager.js",
         "main.js",
+        
         "commands/HideCommand.js",
         "commands/SpamCommand.js",
         "commands/AsciiCommand.js"

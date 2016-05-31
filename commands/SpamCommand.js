@@ -25,4 +25,4 @@ class SpamCommand extends ChatCommand {
 	}
 }
 
-registerCommand(SpamCommand);
+FbCommands.registerCommand(SpamCommand);
