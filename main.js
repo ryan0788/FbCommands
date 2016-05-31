@@ -1,4 +1,5 @@
-var managedChats = [];
+var managedChats = {};
+var observers = [];
 var commands = {};
 
 window.addEventListener("load", function() {
@@ -12,6 +13,8 @@ window.addEventListener("load", function() {
     });
      
     observer.observe(nubGroup, { childList: true });
+
+    addChatObserver(new ChatObserver());
 });
 
 // Checks children of the passed nubgroup to see if there are any new chat nubs.
@@ -26,8 +29,19 @@ var addManagerToChatNubs = function(nubGroup) {
         }
 
         nub.setAttribute('class', nub.className + ' fbCommandsManaged');
-        managedChats.push(new ChatManager(nub));
+
+        var id = getAvailableChatId();
+        managedChats[id] = new ChatManager(id, nub);
     }
+}
+
+var getAvailableChatId = function() {
+    var id = 0;
+    while (managedChats.hasOwnProperty(id)) {
+        id++;
+    }
+
+    return id;
 }
 
 var registerCommand = function(commandClass) {
@@ -36,8 +50,32 @@ var registerCommand = function(commandClass) {
     }
 }
 
+var addChatObserver = function(observer) {
+    if (observer instanceof ChatObserver) {
+        observers[observers.length] = observer;
+    }
+}
+
+var removeChatObserver = function(observer) {
+    var i = observers.indexOf(observer);
+    if (i > -1) {
+        observers.splice(i, 1);
+    }
+}
+
+var notifyObservers = function(eventName, data) {
+    for (var i = 0; i < observers.length; i++) {
+        if (typeof observers[i][eventName] == "function") {
+            observers[i][eventName](data);
+        } else {
+            console.log("Observer is missing event '" + eventName + "'.");
+        }
+    }
+}
+
 class ChatManager {
-    constructor(nub) {
+    constructor(id, nub) {
+        this.id = id;
         this.nub = nub;
         this.nubBody = nub.getElementsByClassName("fbNubFlyoutBody")[0];
         this.nubFooter = nub.getElementsByClassName('fbNubFlyoutFooter')[0]
@@ -151,10 +189,18 @@ class ChatManager {
 
     onSentMessage(message) {
         this.sendMessage(message);
+
+        notifyObservers('onSentMessage', {
+            id: this.id,
+            message: message
+        });
     }
 
     onRecievedMessage(message) {
-        //this.sendLocalMessage(message);
+        notifyObservers('onRecievedMessage', {
+            id: this.id,
+            message: message
+        });
     }
 
     onCommand(message) {
@@ -184,22 +230,26 @@ class ChatManager {
     }
 
     sendMessage(message) {
-        var sentMessage = message;
-        if (this.getInputText() != message) {
-            this.clearInputField();
-            sentMessage = '';
-            // Type the message into the input field.
-            for (var i = 0, len = message.length; i < len; i++) {
-                var char = message[i];
-                if (CHAR_TO_KEYCODE.hasOwnProperty(char)) {
-                    sentMessage += char;
-                    this.sendTrustedKeyPress(CHAR_TO_KEYCODE[char].keyCode, CHAR_TO_KEYCODE[char].shiftKey, char);
+         // Make sure that we can type into the input field
+        if (this.hasFocus) {
+
+            var sentMessage = message;
+            if (this.getInputText() != message) {
+                this.clearInputField();
+                sentMessage = '';
+                // Type the message into the input field.
+                for (var i = 0, len = message.length; i < len; i++) {
+                    var char = message[i];
+                    if (CHAR_TO_KEYCODE.hasOwnProperty(char)) {
+                        sentMessage += char;
+                        this.sendTrustedKeyPress(CHAR_TO_KEYCODE[char].keyCode, CHAR_TO_KEYCODE[char].shiftKey, char);
+                    }
                 }
             }
-        }
 
-        this.lastMessage = sentMessage;
-        this.sendTrustedKeyPress(13); // Shoot!
+            this.lastMessage = sentMessage;
+            this.sendTrustedKeyPress(13); // Shoot!
+        }
     }
 
     sendLocalMessage(message, hideDelay=0) {

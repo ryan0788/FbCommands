@@ -14,6 +14,7 @@
       "js": [
         "char_to_keycode.js",
         "commands/ChatCommand.js",
+        "ChatObserver.js",
         "main.js",
         "commands/HideCommand.js",
         "commands/SpamCommand.js",
