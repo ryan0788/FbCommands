@@ -13,8 +13,6 @@ window.addEventListener("load", function() {
     });
      
     observer.observe(nubGroup, { childList: true });
-
-    addChatObserver(new ChatObserver());
 });
 
 // Checks children of the passed nubgroup to see if there are any new chat nubs.
