@@ -12,15 +12,15 @@
         "https://www.facebook.com/*"
       ],
       "js": [
-        "char_to_keycode.js",
-        "commands/ChatCommand.js",
-        "ChatObserver.js",
-        "ChatManager.js",
+        "src/char_to_keycode.js",
+        "src/commands/ChatCommand.js",
+        "src/ChatObserver.js",
+        "src/ChatManager.js",
         "main.js",
-        
-        "commands/HideCommand.js",
-        "commands/SpamCommand.js",
-        "commands/AsciiCommand.js"
+
+        "src/commands/HideCommand.js",
+        "src/commands/SpamCommand.js",
+        "src/commands/AsciiCommand.js"
       ]
     }
   ],
