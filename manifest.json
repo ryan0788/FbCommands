@@ -13,14 +13,16 @@
       ],
       "js": [
         "src/char_to_keycode.js",
-        "src/commands/ChatCommand.js",
         "src/ChatObserver.js",
         "src/ChatManager.js",
         "main.js",
 
+        "src/commands/ChatCommand.js",
+        "src/commands/PresetCommand.js",
         "src/commands/HideCommand.js",
         "src/commands/SpamCommand.js",
-        "src/commands/AsciiCommand.js"
+        "src/commands/AsciiCommand.js",
+        "src/commands/CopyPastaCommand.js"
       ]
     }
   ],

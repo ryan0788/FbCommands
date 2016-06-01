@@ -168,6 +168,11 @@ class ChatManager {
          // Make sure that we can type into the input field
         if (this.hasFocus) {
 
+            // Multi-line messages can come in an array, convert to string
+            if (typeof message == "object") {
+                message = message.join('\n');
+            }
+
             var sentMessage = message;
             if (this.getInputText() != message) {
                 this.clearInputField();
@@ -200,6 +205,7 @@ class ChatManager {
         if (typeof message == "object") {
             message = message.join("</br>");
         }
+        message = message.replace(/  /g, '&nbsp;&nbsp;');
 
         this.localMessageArea.innerHTML = message;
         this.scrollToBottom();
