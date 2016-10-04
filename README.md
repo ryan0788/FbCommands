@@ -1,4 +1,7 @@
 # FbCommands
+
+__NOTE: This extension has not been tested and probably will not work with Facebook's new chat UI.__
+
 *A Google Chrome extension that adds features to Facebook chat.*
 
 This extension implements command hooks into Facebook chat windows.
